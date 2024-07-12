@@ -20,7 +20,8 @@ string randomWord(){
 		"Iran",
 		"Ethiopia",
 		"Oman",
-		"Indonesia"
+		"Indonesia",
+		"Sri Lanka"
 	};
     cout << random(0, 9);
 	return words[random(0, 9)];
