@@ -45,7 +45,7 @@ The above "words.txt" file can be found on the "optimized" branch of repo
 
 #include <iostream>
 #include <string>
-#include <random>
+#include <fstream>
 #include <chrono>
 #include <iomanip>
 
