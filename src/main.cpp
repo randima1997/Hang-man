@@ -1,8 +1,30 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <chrono>
 
 using namespace std;
+
+class Timer{
+  public:
+    Timer(){
+        start_timepoint = std::chrono::high_resolution_clock::now();
+    }
+
+    ~Timer(){
+        auto end_timepoint = std::chrono::high_resolution_clock::now();
+        auto start_time = std::chrono::time_point_cast<std::chrono::microseconds>(start_timepoint).time_since_epoch().count();
+        auto end_time = std::chrono::time_point_cast<std::chrono::microseconds>(end_timepoint).time_since_epoch().count();
+
+        auto time_duration = end_time - start_time;
+        std::cout << "Time duration: "<<time_duration << std::endl;
+    }
+
+  private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_timepoint; 
+};
+
+
 int random(int a, int b){
     thread_local mt19937 eng{random_device{}()};
     uniform_int_distribution<int> dist(a, b);
@@ -54,7 +76,8 @@ int main(){
 	while (tries > 0){
 		cout << unknown << endl;
         	char letter; 
-		cin >> letter;	
+		cin >> letter;
+		Timer T1;
 		if (letterFill(letter, word, unknown) == 0){
 			cout << "Could not find " << letter << " in the word." << endl;
 			tries--;
@@ -69,7 +92,7 @@ int main(){
 		{
 			cout << word << endl;
 			cout << "Yeah! You got it!";
-            return 0;
+            		return 0;
 		}
 	}
 	cout << endl << "Sorry, you lose...you've been hanged." << endl;
