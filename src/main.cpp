@@ -1,9 +1,7 @@
 /*
-This code contains the optimized version of a Hangman Game by Hotsotse. 
-
-
-
-
+This code contains the optimized version of a Hangman Game by Hotsotse.
+The forked repo can be found: https://github.com/randima1997/Hang-man.git
+The link to Original main src file: https://github.com/randima1997/Hang-man/tree/a00ac77024a371e8181af7740fe29c721cfd25eb/src
 
 The optimization process
 mainly involved the following:
@@ -42,6 +40,7 @@ England
 Scotland
 Argentina
 
+The above "words.txt" file can be found on the "optimized" branch of repo
 */
 
 #include <iostream>
@@ -74,23 +73,20 @@ class Timer{
 
 void randomWord(std::string& word){				// "word" initialized in main() passed by reference
 	std::ifstream file("words.txt");			// The words stored in a txt file rather and loaded entirely to memory
-    
     	srand((unsigned) time(NULL));				// Uses current time as a seed value for random numbers
     	int i = 1, rand_num = 1 + rand()%10;			// Generates random number
 
     	while(std::getline(file, word) && i != rand_num){	// Reads line by line from file and stores a random word in "word"
         	i++;
-    	}
+	}
 }
-
 
 int letterFill(const char& guess, const std::string& secretword, std::string& guessword){	// guess and secretword are read only 
     int matches=0;										// while guessword needs to be operated
-    for (int i = 0; i < secretword.length(); i++)						
-    {
-        // Did we already match this letter in a previous guess?
+    for (int i = 0; i < secretword.length(); i++){   
+	// Did we already match this letter in a previous guess?
         if (guess == guessword[i]) return 0;
-
+	    
         // Is the guess in the secret word?
         if (guess == secretword[i]  || (guess - (97-65)) == secretword[i]){			// (97-65) accounts for Uppercase
             guessword[i] = secretword[i];							// Reveals letter if guess is correct
@@ -113,7 +109,7 @@ int main(){
        		char letter; 
 		std::cin >> letter;				// Takes user's guess
 		Timer T1;					// Starts timer for loop
-
+		
 		if (letterFill(letter, word, unknown) == 0){
 			std::cout << "Could not find " << letter << " in the word." << std::endl;
 			tries--;
@@ -121,18 +117,14 @@ int main(){
 		else {
 			std::cout << "Found letter! " << std::endl;
 		}
-
-
-		if (word == unknown)
-		{
+		
+		if (word == unknown){
 			std::cout << word << std::endl;
 			std::cout << "Yeah! You got it!";
             		return 0;
 		}
-		
 	}
 	std::cout << "Sorry, you lose...you've been hanged." << std::endl;
 	std::cout << "The word was : " << word << std::endl;
-
 	return 0;
 }
