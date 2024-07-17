@@ -1,44 +1,50 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <chrono>
+#include <iomanip>
 
-using namespace std;
-int random(int a, int b){
-    thread_local mt19937 eng{random_device{}()};
-    uniform_int_distribution<int> dist(a, b);
-    return dist(eng);
+class Timer{
+  public:
+    Timer(){
+        start_timepoint = std::chrono::high_resolution_clock::now();
+    }
+
+    ~Timer(){
+        auto end_timepoint = std::chrono::high_resolution_clock::now();
+        auto start_time = std::chrono::time_point_cast<std::chrono::microseconds>(start_timepoint).time_since_epoch().count();
+        auto end_time = std::chrono::time_point_cast<std::chrono::microseconds>(end_timepoint).time_since_epoch().count();
+
+        auto time_duration = end_time - start_time;
+        std::cout << "Time duration: "<<time_duration << std::endl;
+    }
+
+  private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_timepoint; 
+};
+
+void randomWord(std::string& word){
+	std::ifstream file("words.txt");
+    
+    srand((unsigned) time(NULL));
+    int i = 1, rand_num = 1 + rand()%10;
+
+    while(std::getline(file, word) && i != rand_num){
+        i++;
+    }
 }
 
-string randomWord(){
-	string words[] = {
-		"India",
-		"Pakistan",
-		"Nepal",
-		"Malaysia",
-		"Philippines",
-		"Australia",
-		"Iran",
-		"Ethiopia",
-		"Oman",
-		"Indonesia",
-		"Sri Lanka"
-	};
-    cout << random(0, 9);
-	return words[random(0, 9)];
-}
 
-int letterFill(char guess, string secretword, string &guessword){
+int letterFill(char& guess, std::string& secretword, std::string& guessword){
     int matches=0;
-    int len = secretword.length();
-
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i < secretword.length(); i++)
     {
         // Did we already match this letter in a previous guess?
         if (guess == guessword[i]) return 0;
 
         // Is the guess in the secret word?
-        if (guess == secretword[i]){
-            guessword[i] = guess;
+        if (guess == secretword[i]  || (guess - (97-65)) == secretword[i]){
+            guessword[i] = secretword[i];
             matches++;
         }
     }
@@ -47,35 +53,39 @@ int letterFill(char guess, string secretword, string &guessword){
 
 int main(){
 	int tries = 6;
-	string letter = "";
-	string word = randomWord();
-	string unknown(word.length(), '_');
-	cout << "Welcome to hangman mang!" << endl;
-	cout << "Random word has been generated! Word is " << word.length() << " letters long!" << endl;
+	
+	std::string word;
+	randomWord(word);
+	std::string unknown(word.length(), '_');
+	std::cout << "Welcome to Hangman!" << std::endl;
+	std::cout << "Random word has been generated! Word is " << word.length() << " letters long!" << std::endl;
 	while (tries > 0){
-		cout << unknown << endl;
-        	char letter; 
-		cin >> letter;	
+		
+		std::cout << "Guess a letter, you have " << tries << " tries left." << std::endl;
+		std::cout << unknown << std::endl;
+       		char letter; 
+		std::cin >> letter;
+		Timer T1;
+
 		if (letterFill(letter, word, unknown) == 0){
-			cout << "Could not find " << letter << " in the word." << endl;
+			std::cout << "Could not find " << letter << " in the word." << std::endl;
 			tries--;
 		}
 		else {
-			cout << "Found letter! " << endl;
+			std::cout << "Found letter! " << std::endl;
 		}
 
-		cout << "Guess a letter, you have " << tries << " left." << endl;
 
 		if (word == unknown)
 		{
-			cout << word << endl;
-			cout << "Yeah! You got it!";
-            return 0;
+			std::cout << word << std::endl;
+			std::cout << "Yeah! You got it!";
+            		return 0;
 		}
+		
 	}
-	cout << endl << "Sorry, you lose...you've been hanged." << endl;
-	cout << "The word was : " << word << endl;
-	//cin.ignore();
+	std::cout << "Sorry, you lose...you've been hanged." << std::endl;
+	std::cout << "The word was : " << word << std::endl;
 
 	return 0;
 }
